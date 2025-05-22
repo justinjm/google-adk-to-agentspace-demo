@@ -174,15 +174,15 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "X-Goog-User-Project: ${PROJECT_ID}" \
     "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations?authorizationId=${AUTH_ID}" \
-        -d '{
-   "name": "projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}",
-   "serverSideOauth2": {
-        "clientId": ${CLIENT_ID},
-        "clientSecret": ${CLIENT_SECRET},
-        "authorizationUri": ${AUTH_URI},
-        "tokenUri": ${TOKEN_URI}
-        }
-   }'
+    -d "{
+          \"name\": \"projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}\",
+          \"serverSideOauth2\": {
+            \"clientId\": \"${CLIENT_ID}\",
+            \"clientSecret\": \"${CLIENT_SECRET}\",
+            \"authorizationUri\": \"${AUTH_URI}\",
+            \"tokenUri\": \"${TOKEN_URI}\"
+          }
+        }"
 ```
 
 #### enable APIs and user permissions
@@ -221,14 +221,19 @@ curl -X POST \
     -H "Content-Type: application/json" \
     -H "X-Goog-User-Project: ${PROJECT_ID}" \
     "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents" \
-        -d '{
-          "displayName": "Data Science Agent",
-          "description": "A multi-agent system designed for sophisticated data analysis ",
-          "adk_agent_definition": {"tool_settings": {
-          "tool_description": "Mulitple data science related tools"},
-          "provisioned_reasoning_engine": {"reasoning_engine": "projects/${PROJECT_ID}/locations/global/reasoningEngines/${RESOURCE_ID}"},
-          "authorizations": ["projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}"]
-    }}'
+    -d "{
+          \"displayName\": \"Data Science Agent\",
+          \"description\": \"A multi-agent system designed for sophisticated data analysis \",
+          \"adk_agent_definition\": {
+            \"tool_settings\": {
+              \"tool_description\": \"Mulitple data science related tools\"
+            },
+            \"provisioned_reasoning_engine\": {
+              \"reasoning_engine\": \"projects/${PROJECT_ID}/locations/global/reasoningEngines/${RESOURCE_ID}\"
+            },
+            \"authorizations\": [\"projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}\"]
+          }
+        }"
 ```
 
 Now the agent should be ready to use in Agentspace.
