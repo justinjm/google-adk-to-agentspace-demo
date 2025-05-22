@@ -73,9 +73,6 @@ PROJECT_ID=$(gcloud config get-value project)
 PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
 export LOCATION="us-central1"
 
-export APP_NAME="adk-agentspace-demo"
-export BUCKET_NAME="${PROJECT_ID}-${APP_NAME}"
-
 export APP_ID="enterprise-search-17417040_1741704019737" # ID of agentspace app 
 ```
 
@@ -83,17 +80,13 @@ export APP_ID="enterprise-search-17417040_1741704019737" # ID of agentspace app
 
 https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/set-up#service-agent
 
-#### manually generate service agent (if needed)
+##### manually generate service agent (if needed)
 
 ```sh
 gcloud beta services identity create --service=aiplatform.googleapis.com --project=${PROJECT_ID}
 ```
 
-#### create GCS bucket
-
-```sh
-gcloud storage buckets create "gs://${BUCKET_NAME}" --location=$LOCATION
-```
+##### Add BigQuery and Vertex AI roles to Agent Engine service agent
 
 ```sh
 export RE_SA="service-${PROJECT_NUMBER}@gcp-sa-aiplatform-re.iam.gserviceaccount.com"
@@ -110,6 +103,8 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --condition=None \
     --role="roles/aiplatform.user"
 ```
+
+#### Build and deploy agent to agent engine
 
 Next, you need to create a `.whl` file for your agent. From the `data-science` directory, run this command:
 
@@ -240,7 +235,7 @@ Now the agent should be ready to use in Agentspace.
 
 ![](/img/agentspace-adk-agent.png)
 
-## CLEANUP
+### CLEANUP
 
 TODO - finish
 
