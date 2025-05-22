@@ -203,14 +203,15 @@ gcloud services enable discoveryengine.googleapis.com
 2. Enable the Vertex AI user and Vertex AI viewer role in your discoveryengine service account. This is required for Agentspace to call your ADK agent. Go to IAM in cloud console, search for discoveryengine and add permissions to that Service Account. To see the discoveryengine service account you need to check the "Include Google-provided role grants" on the IAM console screen.
 
 ```sh
+export DISCOVERYENGINE_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-discoveryengine.iam.gserviceaccount.com"
 # Grant Vertex AI User role
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
-    --member="serviceAccount:${RE_SA}" \
+    --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
     --role="roles/aiplatform.user"
 
 # Grant Vertex AI Viewer role
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
-    --member="serviceAccount:${RE_SA}" \
+    --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
     --role="roles/aiplatform.viewer"
 
 ```
