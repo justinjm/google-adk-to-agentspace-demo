@@ -145,7 +145,7 @@ python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 
 ### Register Agent in Agentspace
 
-### Setup OAuth2  and Client ID
+#### Setup OAuth2  and Client ID
 
 * Obtain a OAuth2 client ID / secret
   * Console -> [OAuth](https://console.cloud.google.com/auth/overview) -> Clients --> Create client ID
@@ -158,7 +158,7 @@ python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
     * Auth URI
     * Token URI
 
-### Configure environment variables
+#### Configure environment variables
 
 For easier running of the following curl commands
 
@@ -169,9 +169,9 @@ For easier running of the following curl commands
 source .env-deployment
 ```
 
-#### Add authorization to agentspace:
+#### Add authorization to agentspace
 
-First we add the 
+First we add the authorization to agentspace:
 
 ```sh
 curl -X POST \
@@ -215,7 +215,9 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 
 ```
 
-## register agent with agentspace
+#### register agent with agentspace
+
+Lastly, we register the agent with agentspace by running:
 
 ```sh
 curl -X POST \
