@@ -147,17 +147,31 @@ python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 
 ### Setup OAuth2  and Client ID
 
-* Copy `.env-deployment-example` to `.env-deployment` and update per instructions in the comments
 * Obtain a OAuth2 client ID / secret
-  * Console -> [OAuth](https://console.cloud.google.com/auth/overview) create client ID 
-  * download JSON or copy/paste values
-  * add redirect url `https://vertexaisearch.cloud.google.com/oauth-redirect`
+  * Console -> [OAuth](https://console.cloud.google.com/auth/overview) -> Clients --> Create client ID
+    * Application type: `Web Application`
+    * Name: `Agentspace` (or whatever you wish)
+    * Authorized redirect URIs: add redirect url `https://vertexaisearch.cloud.google.com/oauth-redirect`
+  * Click create then download JSON or copy/paste the values
+    * Client ID
+    * Client secret
+    * Auth URI
+    * Token URI
+
+### Configure environment variables
+
+For easier running of the following curl commands
+
+* Copy `.env-deployment-example` to `.env-deployment` , update per instructions in the comments and then save
+* run the following (while still ensuring you're in the `src/data-science` directory)
 
 ```sh
 source .env-deployment
 ```
 
 #### Add authorization to agentspace:
+
+First we add the 
 
 ```sh
 curl -X POST \
@@ -219,6 +233,10 @@ curl -X POST \
     }}'
 ```
 
+Now the agent should be ready to use in Agentspace.
+
+![](/img/agentspace-adk-agent.png)
+
 ## CLEANUP
 
 TODO - finish
@@ -236,4 +254,4 @@ TODO - finish
 
 ## References
 
-[VeerMuchandi/corporate\_analyst](https://github.com/VeerMuchandi/corporate_analyst) - example corporate analyst agent
+* [VeerMuchandi/corporate\_analyst](https://github.com/VeerMuchandi/corporate_analyst) - example corporate analyst agent
