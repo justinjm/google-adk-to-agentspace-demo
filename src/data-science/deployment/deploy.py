@@ -138,12 +138,14 @@ def create(env_vars: dict[str, str]) -> None:
 
     remote_agent = agent_engines.create(
         adk_app,
+        display_name=root_agent.name,  # Set the display name here
         requirements=[AGENT_WHL_FILE],
         extra_packages=[AGENT_WHL_FILE],
         env_vars=env_vars
     )
     logger.info("Created remote agent: %s", remote_agent.resource_name)
     print(f"\nSuccessfully created agent: {remote_agent.resource_name}")
+    print(f"Display Name: {root_agent.name}")
 
 
 def delete(resource_id: str) -> None:
