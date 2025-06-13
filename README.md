@@ -125,7 +125,7 @@ When this command returns, if it succeeds it will print an AgentEngine resource 
 
 ```sh
 ...
-Successfully created agent: projects/XXXXXXXXXXXX/locations/us-central1/reasoningEngines/4185013934199144448
+Successfully created agent: projects/XXXXXXXXXXXX/locations/us-central1/reasoningEngines/6747632490917134336
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -133,7 +133,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=4185013934199144448
+export RESOURCE_ID=6747632490917134336
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -157,11 +157,16 @@ python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 
 For easier running of the following curl commands
 
-* Copy `.env-deployment-example` to `.env-deployment` , update per instructions in the comments and then save
+* Copy `.env-registration-example` to `.env-registration` , update per instructions in the comments and then save
 * run the following (while still ensuring you're in the `src/data-science` directory)
 
+
+```bash
+cd ../registration/
+```
+
 ```sh
-source .env-deployment
+source .env-registration
 ```
 
 #### Add authorization to agentspace
@@ -202,13 +207,14 @@ export DISCOVERYENGINE_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-discoveryengin
 # Grant Vertex AI User role
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
     --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
-    --role="roles/aiplatform.user"
+    --role="roles/aiplatform.user" \
+    --condition=None
 
 # Grant Vertex AI Viewer role
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
     --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
-    --role="roles/aiplatform.viewer"
-
+    --role="roles/aiplatform.viewer" \
+    --condition=None 
 ```
 
 #### register agent with agentspace
@@ -222,7 +228,7 @@ curl -X POST \
     -H "X-Goog-User-Project: ${PROJECT_ID}" \
     "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents" \
     -d "{
-          \"displayName\": \"Data Science Agent\",
+          \"displayName\": \"Data Science Agent 2\",
           \"description\": \"A multi-agent system designed for sophisticated data analysis \",
           \"adk_agent_definition\": {
             \"tool_settings\": {
