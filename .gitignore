@@ -130,6 +130,7 @@ celerybeat.pid
 # Environments
 .env
 .env-deployment
+.env-registration
 .venv
 env/
 venv/
@@ -174,4 +175,5 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-.whl
+*.whl
+
