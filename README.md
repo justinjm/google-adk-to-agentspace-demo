@@ -31,7 +31,7 @@ Navigate to the `src/data-science/` directory first and then run `poetry install
 [https://python-poetry.org/docs/#installing-with-the-official-installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  
 
 ```sh
-cd /src/data-science && poetry install
+cd src/data-science && poetry install
 ```
 
 Then activate the virual environment
