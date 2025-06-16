@@ -256,16 +256,7 @@ curl -X GET \
   "https://discoveryengine.googleapis.com/v1alpha/${AGENT_RESOURCE_NAME}"
 ```
 
-#### View all agents 
 
-
-```bash
-curl -X GET \
-  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-  -H "Content-Type: application/json" \
-  -H "X-Goog-User-Project: ${PROJECT_ID}" \
-  "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents"
-```
 
 ### CLEANUP
 
@@ -293,11 +284,20 @@ curl -X DELETE \
     "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}"
 ```
 
-
-#### Delete agent from Agent engine
+#### View all agents registered in agentspace
 
 ```bash
-export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/870078922284269039"
+curl -X GET \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json" \
+  -H "X-Goog-User-Project: ${PROJECT_ID}" \
+  "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents"
+```
+
+#### Delete agent from Agentspace
+
+```bash
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/1419443501657924632"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
@@ -305,6 +305,7 @@ curl -X DELETE \
   "https://discoveryengine.googleapis.com/v1alpha/${AGENT_RESOURCE_NAME}"
 ```
 
+#### Delete agent from Agent Engine
 
 1. Delete deployed agent
 
