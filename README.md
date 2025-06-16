@@ -123,11 +123,19 @@ cd deployment/ && python3 deploy.py --create
 
 ```
 
-When this command returns, if it succeeds it will print an AgentEngine resource name that looks something like this:
+First, it will try to create a code extension and should return the folloiwng message:
+
 
 ```sh
-...
-Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/5395989652752564224
+Extension created. Resource name: projects/746038361521/locations/us-central1/extensions/2934186416696983552
+```
+
+you can save this value to the `.env` file so a new one wont be created next time.
+
+When this command completes, if it succeeds it will print an AgentEngine resource name that looks something like this:
+
+```sh
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/5236111865980911616
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -135,7 +143,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=5395989652752564224 
+export RESOURCE_ID=5236111865980911616
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -267,7 +275,7 @@ Now the agent should be ready to use in Agentspace.
 #### View agent
 
 ```bash
-export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/xxxxxsdafasdfasdfasdf"
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/3871638938952021988"
 curl -X GET \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
@@ -316,7 +324,7 @@ curl -X GET \
 #### Delete agent from Agentspace
 
 ```bash
-export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/10463876010846791824"
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/3871638938952021988"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
