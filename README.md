@@ -221,44 +221,71 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 
 Lastly, we register the agent with agentspace by running:
 
-```sh
+```bash
 curl -X POST \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     -H "Content-Type: application/json" \
     -H "X-Goog-User-Project: ${PROJECT_ID}" \
     "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents" \
-    -d "{
-          \"displayName\": \"Data Science Agent 2\",
-          \"description\": \"A multi-agent system designed for sophisticated data analysis \",
-          \"adk_agent_definition\": {
-            \"tool_settings\": {
-              \"tool_description\": \"Mulitple data science related tools\"
-            },
-            \"provisioned_reasoning_engine\": {
-              \"reasoning_engine\": \"projects/${PROJECT_ID}/locations/global/reasoningEngines/${RESOURCE_ID}\"
-            },
-            \"authorizations\": [
-              \"projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}\"
-            ]
-          }
-        }"
+    -d '{
+      "displayName": "${DISPLAY_NAME}",
+      "description": "${DESCRIPTION}",
+      "icon": {
+        "uri": "${ICON_URI}"
+        },
+        "adk_agent_definition": {
+          "tool_settings": {
+          "tool_description": "${TOOL_DESCRIPTION}"
+          },
+          "provisioned_reasoning_engine": {
+            "reasoning_engine": "projects/${PROJECT_ID}/locations/global/reasoningEngines/${ADK_DEPLOYMENT_ID}"
+            }
+            }
+            }'
+
 ```
+
 
 Now the agent should be ready to use in Agentspace.
 
 ![](/img/agentspace-adk-agent.png)
 
+#### View agent
+
+
+```bash
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/15257085147470077704"
+curl -X GET \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json" \
+  -H "X-Goog-User-Project: ${PROJECT_ID}" \
+  "https://discoveryengine.googleapis.com/v1alpha/${AGENT_RESOURCE_NAME}"
+```
+
+#### View all agents 
+
+
+```bash
+curl -X GET \
+  -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+  -H "Content-Type: application/json" \
+  -H "X-Goog-User-Project: ${PROJECT_ID}" \
+  "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents"
+```
+
+
+
+
+
+
 ### CLEANUP
-
-
-
 
 TODO - finish
 
 #### List all authorizations 
 
 ```sh
-curl -X GET \   
+curl -X GET \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     -H "Content-Type: application/json" \
     -H "X-Goog-User-Project: ${PROJECT_ID}" \
@@ -269,14 +296,24 @@ curl -X GET \
 #### Delete a single authorization 
 
 
+```bash
+curl -X DELETE \
+    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
+    -H "Content-Type: application/json" \
+    -H "X-Goog-User-Project: ${PROJECT_ID}" \
+    "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}"
+```
+
+
 #### Delete agent from Agent engine
 
-```
+```bash
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/15257085147470077704"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
   -H "X-Goog-User-Project: ${PROJECT_ID}" \
-  "https://discoveryengine.googleapis.com/v1alpha/AGENT_RESOURCE_NAME"
+  "https://discoveryengine.googleapis.com/v1alpha/${AGENT_RESOURCE_NAME}"
 ```
 
 
