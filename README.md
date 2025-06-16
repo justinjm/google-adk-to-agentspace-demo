@@ -117,13 +117,17 @@ Then run the below command. This will create a staging bucket in your GCP projec
 
 ```sh
 cd deployment/ && python3 deploy.py --create
+# cd deployment/ && python deploy.py --create
+# cd deployment/ && poetry run python3 deploy.py --create
+# cd deployment/ && poetry run python deploy.py --create
+
 ```
 
 When this command returns, if it succeeds it will print an AgentEngine resource name that looks something like this:
 
 ```sh
 ...
-Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/2955038654717755392
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/5395989652752564224
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -131,7 +135,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=2955038654717755392
+export RESOURCE_ID=5395989652752564224 
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -167,6 +171,9 @@ cd ../registration/ && source .env-registration
 First we add the authorization to agentspace:
 
 ```sh
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
+
 curl -X POST \
     -H "Authorization: Bearer $(gcloud auth print-access-token)" \
     -H "Content-Type: application/json" \
@@ -217,7 +224,16 @@ Lastly, we register the agent with agentspace by running the below.
 Note we set the `ADK_DEPLOYMENT_ID` here to be sure it's correct and not have to check/reload the `.env-registration` file again
 
 ```bash
-export ADK_DEPLOYMENT_ID="2955038654717755392"
+export ADK_DEPLOYMENT_ID=5395989652752564224
+
+export PROJECT_ID=$(gcloud config get-value project)
+export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
+
+export APP_ID="enterprise-search-17417040_1741704019737" # ID of agentspace app 
+
+export DISPLAY_NAME="Data Science Agent"
+export DESCRIPTION="A multi-agent system designed for sophisticated data analysis"
+export TOOL_DESCRIPTION="Mulitple data science related tools"
 
 curl -X POST \
 -H "Authorization: Bearer $(gcloud auth print-access-token)" \
