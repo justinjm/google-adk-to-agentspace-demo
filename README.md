@@ -209,12 +209,6 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
     --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
     --role="roles/aiplatform.user" \
     --condition=None
-
-# Grant Vertex AI Viewer role
-gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
-    --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
-    --role="roles/aiplatform.viewer" \
-    --condition=None 
 ```
 
 #### register agent with agentspace
@@ -223,26 +217,25 @@ Lastly, we register the agent with agentspace by running:
 
 ```bash
 curl -X POST \
-    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    -H "Content-Type: application/json" \
-    -H "X-Goog-User-Project: ${PROJECT_ID}" \
-    "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents" \
-    -d '{
-      "displayName": "${DISPLAY_NAME}",
-      "description": "${DESCRIPTION}",
-      "icon": {
-        "uri": "${ICON_URI}"
+-H "Authorization: Bearer $(gcloud auth print-access-token)" \
+-H "Content-Type: application/json" \
+-H "X-Goog-User-Project: ${PROJECT_ID}" \
+"https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents" \
+-d "{
+    \"displayName\": \"${DISPLAY_NAME}\",
+    \"description\": \"${DESCRIPTION}\",
+    \"adk_agent_definition\": {
+        \"tool_settings\": {
+            \"tool_description\": \"${TOOL_DESCRIPTION}\"
         },
-        "adk_agent_definition": {
-          "tool_settings": {
-          "tool_description": "${TOOL_DESCRIPTION}"
-          },
-          "provisioned_reasoning_engine": {
-            "reasoning_engine": "projects/${PROJECT_ID}/locations/global/reasoningEngines/${ADK_DEPLOYMENT_ID}"
-            }
-            }
-            }'
-
+        \"provisioned_reasoning_engine\": {
+            \"reasoning_engine\": \"projects/${PROJECT_ID}/locations/global/reasoningEngines/${ADK_DEPLOYMENT_ID}\"
+        },
+        \"authorizations\": [
+            \"projects/${PROJECT_NUMBER}/locations/global/authorizations/${AUTH_ID}\"
+        ]
+    }
+}"
 ```
 
 
@@ -250,11 +243,12 @@ Now the agent should be ready to use in Agentspace.
 
 ![](/img/agentspace-adk-agent.png)
 
+
+
 #### View agent
 
-
 ```bash
-export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/15257085147470077704"
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/xxxxxsdafasdfasdfasdf"
 curl -X GET \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
@@ -273,14 +267,10 @@ curl -X GET \
   "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents"
 ```
 
-
-
-
-
-
 ### CLEANUP
 
 TODO - finish
+
 
 #### List all authorizations 
 
@@ -291,7 +281,6 @@ curl -X GET \
     -H "X-Goog-User-Project: ${PROJECT_ID}" \
     "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations"
 ```
-
 
 #### Delete a single authorization 
 
@@ -308,7 +297,7 @@ curl -X DELETE \
 #### Delete agent from Agent engine
 
 ```bash
-export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/15257085147470077704"
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/870078922284269039"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
