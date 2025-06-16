@@ -123,7 +123,7 @@ When this command returns, if it succeeds it will print an AgentEngine resource 
 
 ```sh
 ...
-Successfully created agent: projects/XXXXXXXXXXXX/locations/us-central1/reasoningEngines/zzzzzzzzzzzzzzzzzz
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/2513685891235446784
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -131,7 +131,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=zzzzzzzzzzzzzzzzzz
+export RESOURCE_ID=2513685891235446784
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -197,6 +197,21 @@ gcloud services enable discoveryengine.googleapis.com
 
 ```bash
 export DISCOVERYENGINE_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-discoveryengine.iam.gserviceaccount.com"
+# Grant Vertex AI User role
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+    --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
+    --role="roles/aiplatform.user" \
+    --condition=None
+
+## Grant Vertex AI viewer role 
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+    --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
+    --role="roles/aiplatform.viewer" \
+    --condition=None
+```
+
+```bash
+export CC_SA_EMAIL="service-${PROJECT_NUMBER}gcp-sa-aiplatform-cc.iam.gserviceaccount.com"
 # Grant Vertex AI User role
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
     --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
@@ -296,7 +311,7 @@ curl -X GET \
 #### Delete agent from Agentspace
 
 ```bash
-export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/1419443501657924632"
+export AGENT_RESOURCE_NAME="projects/746038361521/locations/global/collections/default_collection/engines/enterprise-search-17417040_1741704019737/assistants/default_assistant/agents/13486992500677800922"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
