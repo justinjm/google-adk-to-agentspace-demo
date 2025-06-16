@@ -37,7 +37,7 @@ cd src/data-science && poetry install
 Then activate the virual environment
 
 ```sh
-source $(poetry env info --path)/bin/activate   
+source $(poetry env info --path)/bin/activate
 ```
 
 ### test agent locally
@@ -72,7 +72,6 @@ Set environment variables for deployment from terminal
 PROJECT_ID=$(gcloud config get-value project)
 PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
 export LOCATION="us-central1"
-
 export APP_ID="enterprise-search-17417040_1741704019737" # ID of agentspace app 
 ```
 
@@ -117,15 +116,14 @@ This will create a file named `data_science-0.1-py3-none-any.whl` in the `dep
 Then run the below command. This will create a staging bucket in your GCP project and deploy the agent to Vertex AI Agent Engine:
 
 ```sh
-cd deployment/
-python3 deploy.py --create
+cd deployment/ && python3 deploy.py --create
 ```
 
 When this command returns, if it succeeds it will print an AgentEngine resource name that looks something like this:
 
 ```sh
 ...
-Successfully created agent: projects/XXXXXXXXXXXX/locations/us-central1/reasoningEngines/6747632490917134336
+Successfully created agent: projects/XXXXXXXXXXXX/locations/us-central1/reasoningEngines/zzzzzzzzzzzzzzzzzz
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -133,7 +131,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=6747632490917134336
+export RESOURCE_ID=zzzzzzzzzzzzzzzzzz
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -158,15 +156,10 @@ python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 For easier running of the following curl commands
 
 * Copy `.env-registration-example` to `.env-registration` , update per instructions in the comments and then save
-* run the following (while still ensuring you're in the `src/data-science` directory)
-
+* navigate to the registration directory and load the environment variables:
 
 ```bash
-cd ../registration/
-```
-
-```sh
-source .env-registration
+cd ../registration/ && source .env-registration
 ```
 
 #### Add authorization to agentspace
@@ -202,12 +195,18 @@ gcloud services enable discoveryengine.googleapis.com
 
 2. Enable the Vertex AI user and Vertex AI viewer role in your discoveryengine service account. This is required for Agentspace to call your ADK agent. Go to IAM in cloud console, search for discoveryengine and add permissions to that Service Account. To see the discoveryengine service account you need to check the "Include Google-provided role grants" on the IAM console screen.
 
-```sh
+```bash
 export DISCOVERYENGINE_SA_EMAIL="service-${PROJECT_NUMBER}@gcp-sa-discoveryengine.iam.gserviceaccount.com"
 # Grant Vertex AI User role
 gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
     --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
     --role="roles/aiplatform.user" \
+    --condition=None
+
+## Grant Vertex AI viewer role 
+gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
+    --member="serviceAccount:${DISCOVERYENGINE_SA_EMAIL}" \
+    --role="roles/aiplatform.viewer" \
     --condition=None
 ```
 
