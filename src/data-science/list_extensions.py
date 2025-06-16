@@ -3,7 +3,8 @@ from vertexai.preview import extensions
 
 # TODO (developer):Update project_id
 # PROJECT_ID = "your-project-id"
-vertexai.init(project="demos-vertex-ai", location="us-central1")
+# vertexai.init(project="demos-vertex-ai", location="us-central1")
+vertexai.init(location="us-central1")
 
 extensions_list = extensions.Extension.list()
 print(extensions_list)
