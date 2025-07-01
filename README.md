@@ -324,6 +324,7 @@ curl -X GET \
 #### Delete agent from Agentspace
 
 ```bash
+export ADK_DEPLOYMENT_ID=2474619246295505031
 export AGENT_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${ADK_DEPLOYMENT_ID}"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
