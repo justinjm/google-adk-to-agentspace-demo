@@ -342,8 +342,17 @@ curl -X DELETE \
 #python3 deployment/deploy.py --delete --resource_id=RESOURCE_ID
 ```
 
-2. Delete BQ dataset / table
-3. Delete GCS bucket
+2. Delete vertex ai extension(s) - included scripts delete all or selected 
+
+```python
+python delete_extensions.py --mode delete_all --project_id $PROJECT_ID
+python delete_extensions.py --mode delete_list --ids 6738311930848477184 1334788424422391808 --project_id $PROJECT_ID
+```
+
+
+3. Delete BQ dataset / table
+4. Delete GCS bucket
+5. 
 
 
 ## References
