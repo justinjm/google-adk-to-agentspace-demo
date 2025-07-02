@@ -135,7 +135,7 @@ you can save this value to the `.env` file so a new one wont be created next tim
 When this command completes, if it succeeds it will print an AgentEngine resource name that looks something like this:
 
 ```sh
-Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/3329400373742927872
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/6786951026726404096
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -143,7 +143,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=3329400373742927872
+export RESOURCE_ID=6786951026726404096
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -232,7 +232,7 @@ Lastly, we register the agent with agentspace by running the below.
 Note we set the `ADK_DEPLOYMENT_ID` here to be sure it's correct and not have to check/reload the `.env-registration` file again
 
 ```bash
-export ADK_DEPLOYMENT_ID=3329400373742927872
+export ADK_DEPLOYMENT_ID=6786951026726404096
 
 export PROJECT_ID=$(gcloud config get-value project)
 export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
@@ -324,7 +324,7 @@ curl -X GET \
 #### Delete agent from Agentspace
 
 ```bash
-export ADK_DEPLOYMENT_ID=2474619246295505031
+export ADK_DEPLOYMENT_ID=6217685200470453698
 export AGENT_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${ADK_DEPLOYMENT_ID}"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
