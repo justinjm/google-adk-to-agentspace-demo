@@ -116,15 +116,14 @@ This will create a file named `data_science-0.1-py3-none-any.whl` in the `dep
 Then run the below command. This will create a staging bucket in your GCP project and deploy the agent to Vertex AI Agent Engine:
 
 ```sh
-cd deployment/ && python3 deploy.py --create
-# cd deployment/ && python deploy.py --create
-# cd deployment/ && poetry run python3 deploy.py --create
-# cd deployment/ && poetry run python deploy.py --create
+cd deployment/ 
+```
 
+```sh
+poetry run python deploy.py --create
 ```
 
 First, it will try to create a code extension and should return the folloiwng message:
-
 
 ```sh
 Extension created. Resource name: projects/746038361521/locations/us-central1/extensions/3783677896409743360
@@ -135,7 +134,7 @@ you can save this value to the `.env` file so a new one wont be created next tim
 When this command completes, if it succeeds it will print an AgentEngine resource name that looks something like this:
 
 ```sh
-Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/6786951026726404096
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/1184473090277507072
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -143,25 +142,13 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=6786951026726404096
+export RESOURCE_ID=1184473090277507072
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
 
 ### Register Agent in Agentspace
 
-#### Setup OAuth2  and Client ID
-
-* Obtain a OAuth2 client ID / secret
-  * Console -> [OAuth](https://console.cloud.google.com/auth/overview) -> Clients --> Create client ID
-    * Application type: `Web Application`
-    * Name: `Agentspace` (or whatever you wish)
-    * Authorized redirect URIs: add redirect url `https://vertexaisearch.cloud.google.com/oauth-redirect`
-  * Click create then download JSON or copy/paste the values
-    * Client ID
-    * Client secret
-    * Auth URI
-    * Token URI
 
 #### Configure environment variables
 
@@ -172,30 +159,6 @@ For easier running of the following curl commands
 
 ```bash
 cd ../registration/ && source .env-registration
-```
-
-#### Add authorization to agentspace
-
-First we add the authorization to agentspace:
-
-```sh
-export PROJECT_ID=$(gcloud config get-value project)
-export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
-
-curl -X POST \
-    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    -H "Content-Type: application/json" \
-    -H "X-Goog-User-Project: ${PROJECT_ID}" \
-    "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations?authorizationId=${AUTH_ID}" \
-    -d "{
-          \"name\": \"projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}\",
-          \"serverSideOauth2\": {
-            \"clientId\": \"${CLIENT_ID}\",
-            \"clientSecret\": \"${CLIENT_SECRET}\",
-            \"authorizationUri\": \"${AUTH_URI}\",
-            \"tokenUri\": \"${TOKEN_URI}\"
-          }
-        }"
 ```
 
 #### enable APIs and user permissions
@@ -229,19 +192,10 @@ gcloud projects add-iam-policy-binding $(gcloud config get-value project) \
 
 Lastly, we register the agent with agentspace by running the below.
 
-Note we set the `ADK_DEPLOYMENT_ID` here to be sure it's correct and not have to check/reload the `.env-registration` file again
+Note we set the `ADK_DEPLOYMENT_ID` here to be sure it's correct and so we do not have to check/reload the `.env-registration` file again
 
 ```bash
-export ADK_DEPLOYMENT_ID=6786951026726404096
-
-export PROJECT_ID=$(gcloud config get-value project)
-export PROJECT_NUMBER=$(gcloud projects describe $(gcloud config get-value project) --format='value(projectNumber)')
-
-export APP_ID="enterprise-search-17417040_1741704019737" # ID of agentspace app 
-
-export DISPLAY_NAME="Data Science Agent"
-export DESCRIPTION="A multi-agent system designed for sophisticated data analysis"
-export TOOL_DESCRIPTION="Mulitple data science related tools"
+export ADK_DEPLOYMENT_ID=$RESOURCE_ID
 
 curl -X POST \
 -H "Authorization: Bearer $(gcloud auth print-access-token)" \
@@ -257,25 +211,20 @@ curl -X POST \
         },
         \"provisioned_reasoning_engine\": {
             \"reasoning_engine\": \"projects/${PROJECT_ID}/locations/global/reasoningEngines/${ADK_DEPLOYMENT_ID}\"
-        },
-        \"authorizations\": [
-            \"projects/${PROJECT_NUMBER}/locations/global/authorizations/${AUTH_ID}\"
-        ]
+        }
     }
 }"
 ```
-
 
 Now the agent should be ready to use in Agentspace.
 
 ![](/img/agentspace-adk-agent.png)
 
-
-
 #### View agent
 
 ```bash
-export AGENT_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${ADK_DEPLOYMENT_ID}"
+export AGENT_RESOURCE_ID=17434484936421622698
+export AGENT_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${AGENT_RESOURCE_ID}"
 curl -X GET \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
@@ -283,33 +232,10 @@ curl -X GET \
   "https://discoveryengine.googleapis.com/v1alpha/${AGENT_RESOURCE_NAME}"
 ```
 
-
-
 ### CLEANUP
 
 TODO - finish
 
-
-#### List all authorizations 
-
-```sh
-curl -X GET \
-    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    -H "Content-Type: application/json" \
-    -H "X-Goog-User-Project: ${PROJECT_ID}" \
-    "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations"
-```
-
-#### Delete a single authorization 
-
-
-```bash
-curl -X DELETE \
-    -H "Authorization: Bearer $(gcloud auth print-access-token)" \
-    -H "Content-Type: application/json" \
-    -H "X-Goog-User-Project: ${PROJECT_ID}" \
-    "https://discoveryengine.googleapis.com/v1alpha/projects/${PROJECT_ID}/locations/global/authorizations/${AUTH_ID}"
-```
 
 #### View all agents registered in agentspace
 
@@ -323,9 +249,9 @@ curl -X GET \
 
 #### Delete agent from Agentspace
 
+Update the `AGENT_RESOURCE_ID` with the value from running command above to list all agents OR from the response message (`name`) after registring the agent.
+
 ```bash
-export ADK_DEPLOYMENT_ID=6217685200470453698
-export AGENT_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${ADK_DEPLOYMENT_ID}"
 curl -X DELETE \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
   -H "Content-Type: application/json" \
@@ -333,27 +259,28 @@ curl -X DELETE \
   "https://discoveryengine.googleapis.com/v1alpha/${AGENT_RESOURCE_NAME}"
 ```
 
-#### Delete agent from Agent Engine
-
-1. Delete deployed agent
+#### Delete deployed agent in Agent Engine
 
 ```sh
 ## WARNING! will delete deployed agent
-#python3 deployment/deploy.py --delete --resource_id=RESOURCE_ID
+#python3 deployment/deploy.py --delete --resource_id=$RESOURCE_ID
+#poetry run python deployment/deploy.py --delete --resource_id=$RESOURCE_ID
 ```
 
-2. Delete vertex ai extension(s) - included scripts delete all or selected 
+#### Delete vertex ai extension(s) - included scripts delete all or selected
 
-```python
-python delete_extensions.py --mode delete_all --project_id $PROJECT_ID
-python delete_extensions.py --mode delete_list --ids 6738311930848477184 1334788424422391808 --project_id $PROJECT_ID
+```sh
+poetry run python delete_extensions.py --mode delete_all --project_id $PROJECT_ID
+poetry run python delete_extensions.py --mode delete_list --ids 6738311930848477184 1334788424422391808 --project_id $PROJECT_ID
 ```
 
+#### Delete BQ dataset / table
 
-3. Delete BQ dataset / table
-4. Delete GCS bucket
-5. 
+TODO
 
+#### Delete GCS bucket
+
+TODO
 
 ## References
 
