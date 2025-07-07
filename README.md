@@ -89,14 +89,11 @@ gcloud beta services identity create --service=aiplatform.googleapis.com --proje
 
 ```sh
 export RE_SA="service-${PROJECT_NUMBER}@gcp-sa-aiplatform-re.iam.gserviceaccount.com"
+
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member="serviceAccount:${RE_SA}" \
     --condition=None \
-    --role="roles/bigquery.user"
-gcloud projects add-iam-policy-binding ${PROJECT_ID} \
-    --member="serviceAccount:${RE_SA}" \
-    --condition=None \
-    --role="roles/bigquery.dataViewer"
+    --role="roles/bigquery.admin"
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member="serviceAccount:${RE_SA}" \
     --condition=None \
