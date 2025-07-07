@@ -136,6 +136,12 @@ When this command completes, if it succeeds it will print an AgentEngine resourc
 Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/1184473090277507072
 ```
 
+
+v2
+```
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/7644323805787062272
+```
+
 The last sequence of digits is the AgentEngine resource ID.
 
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
@@ -144,6 +150,15 @@ Once you have successfully deployed your agent, you can interact with it using t
 export RESOURCE_ID=1184473090277507072
 export USER_ID="user1"
 python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
+```
+
+v2
+
+```
+export GOOGLE_CLOUD_STORAGE_BUCKET="${PROJECT_ID}-adk-staging"
+export RESOURCE_ID=7644323805787062272
+export USER_ID="user1"
+poetry run python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
 
 ### Register Agent in Agentspace

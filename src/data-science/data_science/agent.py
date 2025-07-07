@@ -63,7 +63,7 @@ def setup_before_agent_call(callback_context: CallbackContext):
 
 root_agent = Agent(
     model=os.getenv("ROOT_AGENT_MODEL"),
-    name="db_ds_multiagent",
+    name="db_ds_multiagent_2", # TODO - move to .env vars / easier place to update
     instruction=return_instructions_root(),
     global_instruction=(
         f"""

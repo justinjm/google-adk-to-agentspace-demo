@@ -126,7 +126,9 @@ def create(env_vars: dict[str, str]) -> None:
     """Creates and deploys the agent."""
     adk_app = AdkApp(
         agent=root_agent,
-        enable_tracing=False,
+        # TODO - enable tracing per https://cloud.google.com/vertex-ai/generative-ai/docs/agent-engine/manage/tracing
+        enable_tracing=True,
+        
     )
 
     if not os.path.exists(AGENT_WHL_FILE):
