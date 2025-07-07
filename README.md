@@ -110,11 +110,13 @@ poetry build --format=wheel --output=deployment
 
 This will create a file named `data_science-0.1-py3-none-any.whl` in the `deployment` directory.
 
-Then run the below command. This will create a staging bucket in your GCP project and deploy the agent to Vertex AI Agent Engine:
+Now, navigate to the deployment directory: 
 
 ```sh
 cd deployment/ 
 ```
+
+Then run the below command to create a staging bucket in your GCP project and deploy the agent to Vertex AI Agent Engine:
 
 ```sh
 poetry run python deploy.py --create
