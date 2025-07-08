@@ -259,7 +259,6 @@ curl -X DELETE \
 
 ```sh
 ## WARNING! will delete deployed agent
-#python3 deployment/deploy.py --delete --resource_id=$RESOURCE_ID
 #poetry run python deployment/deploy.py --delete --resource_id=$RESOURCE_ID
 ```
 
@@ -272,14 +271,18 @@ poetry run python delete_extensions.py --mode delete_list --ids 6738311930848477
 
 #### Delete BQ dataset / table
 
+https://cloud.google.com/bigquery/docs/managing-datasets#delete-datasets
+
 ```sh
 # bq rm -r -f -d ${PROJECT_ID}:forecasting_sticker_sales
 ```
 
 #### Delete GCS bucket
 
+https://cloud.google.com/storage/docs/deleting-buckets
+
 ```sh
-# gsutil rm -r gs://${PROJECT_ID}-adk-staging
+
 # gcloud storage rm --recursive gs://${PROJECT_ID}-adk-staging
 ```
 
