@@ -133,7 +133,7 @@ you can save this value to the `.env` file so a new one wont be created next tim
 When this command completes, if it succeeds it will print an AgentEngine resource name that looks something like this:
 
 ```sh
-Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/1184473090277507072
+Successfully created agent: projects/746038361521/locations/us-central1/reasoningEngines/526384594727993344
 ```
 
 The last sequence of digits is the AgentEngine resource ID.
@@ -141,7 +141,7 @@ The last sequence of digits is the AgentEngine resource ID.
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
 ```sh 
-export RESOURCE_ID=1184473090277507072
+export RESOURCE_ID=526384594727993344
 export USER_ID="user1"
 poetry run python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
@@ -222,7 +222,7 @@ Now the agent should be ready to use in Agentspace.
 #### View agent
 
 ```bash
-export AGENT_RESOURCE_ID=17434484936421622698
+export AGENT_RESOURCE_ID=5261130162575208172
 export AGENT_RESOURCE_NAME="projects/${PROJECT_NUMBER}/locations/global/collections/default_collection/engines/${APP_ID}/assistants/default_assistant/agents/${AGENT_RESOURCE_ID}"
 curl -X GET \
   -H "Authorization: Bearer $(gcloud auth print-access-token)" \
@@ -266,7 +266,7 @@ curl -X DELETE \
 
 ```sh
 poetry run python delete_extensions.py --mode delete_all --project_id $PROJECT_ID
-poetry run python delete_extensions.py --mode delete_list --ids 6738311930848477184 1334788424422391808 --project_id $PROJECT_ID
+poetry run python delete_extensions.py --mode delete_list --ids 1111111111111111 222222222222222 --project_id $PROJECT_ID
 ```
 
 #### Delete BQ dataset / table
