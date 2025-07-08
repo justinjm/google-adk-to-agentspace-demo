@@ -143,7 +143,7 @@ Once you have successfully deployed your agent, you can interact with it using t
 ```sh 
 export RESOURCE_ID=1184473090277507072
 export USER_ID="user1"
-python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
+poetry run python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
 
 ### Register Agent in Agentspace
@@ -233,9 +233,6 @@ curl -X GET \
 
 ### CLEANUP
 
-TODO - finish
-
-
 #### View all agents registered in agentspace
 
 ```bash
@@ -275,11 +272,17 @@ poetry run python delete_extensions.py --mode delete_list --ids 6738311930848477
 
 #### Delete BQ dataset / table
 
-TODO
+```sh
+# bq rm -r -f -d ${PROJECT_ID}:forecasting_sticker_sales
+```
 
 #### Delete GCS bucket
 
-TODO
+```sh
+# gsutil rm -r gs://${PROJECT_ID}-adk-staging
+# gcloud storage rm --recursive gs://${PROJECT_ID}-adk-staging
+```
+
 
 ## References
 
