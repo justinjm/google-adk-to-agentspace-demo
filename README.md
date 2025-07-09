@@ -140,7 +140,8 @@ The last sequence of digits is the AgentEngine resource ID.
 
 Once you have successfully deployed your agent, you can interact with it using the `test_deployment.py` script in the `deployment` directory. Store the agent's resource ID in an environment variable and run the following command:
 
-```sh 
+```sh
+# export GOOGLE_CLOUD_STORAGE_BUCKET="${PROJECT_ID}-adk-staging" # if error, uncomment and re-run commands
 export RESOURCE_ID=526384594727993344
 export USER_ID="user1"
 poetry run python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
