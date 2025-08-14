@@ -8,7 +8,7 @@ See more details on [Vertex AI Agent Engine](https://cloud.google.com/vertex-ai/
 
 ## Pre-requisites
 
-Assumes the following is setup: 
+Assumes the following is setup:
 
 1. Google Cloud project with billing enabled
 2. An [Agentspace Enterprise Plus ](https://cloud.google.com/agentspace/agentspace-enterprise/docs/overview) app
@@ -22,15 +22,22 @@ Assumes the following is setup:
 3. deploy agent to vertex ai ai agent engine
 4. register agent in agentspace
 
+#### Optional - Run in Cloud Shell
+
+To run the following in cloud shell, click the button below and then follow the steps below.
+
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fjustinjm%2Fgoogle-adk-to-agentspace-demo%2F&cloudshell_open_in_editor=README.md)
+
 ### Setup and run agent locally
 
-#### install poetry
+#### Install poetry
 
 Navigate to the `src/data-science/` directory first and then run `poetry install` to install dependencies for a local virtual environment.
 
 [https://python-poetry.org/docs/#installing-with-the-official-installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  
 
 ```sh
+# pip install poetry # if using Cloud Shell Editor, uncomment and run this command to install poetry
 cd src/data-science && poetry install
 ```
 
