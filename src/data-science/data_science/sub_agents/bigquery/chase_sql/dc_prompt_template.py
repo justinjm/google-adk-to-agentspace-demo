@@ -81,14 +81,14 @@ Example 1
 
 **************************
 【Table creation statements】
-CREATE TABLE {BQ_PROJECT_ID}.restaurant.generalinfo
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.restaurant.generalinfo
 (
  id_restaurant INT64,
  food_type STRING OPTIONS(description="the food type"),
  city STRING OPTIONS(description="the city where the restaurant is located in"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.restaurant.location
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.restaurant.location
 (
  id_restaurant INT64,
  street_name STRING OPTIONS(description="the street name of the restaurant"),
@@ -128,7 +128,7 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
    * **SQL:** `T2`.`street_name` = 'san pablo ave' AND `T2`.`city` = 'albany'
 
 * **Main Question (count of restaurants):**
-   * **SQL:** SELECT COUNT(`T1`.`id_restaurant`) FROM `{BQ_PROJECT_ID}.restaurant.generalinfo` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.restaurant.location` AS `T2` ON `T1`.`id_restaurant` = `T2`.`id_restaurant` WHERE `T1`.`food_type` = 'thai' AND `T2`.`street_name` = 'san pablo ave' AND `T2`.`city` = 'albany'
+   * **SQL:** SELECT COUNT(`T1`.`id_restaurant`) FROM `{BQ_DATA_PROJECT_ID}.restaurant.generalinfo` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.restaurant.location` AS `T2` ON `T1`.`id_restaurant` = `T2`.`id_restaurant` WHERE `T1`.`food_type` = 'thai' AND `T2`.`street_name` = 'san pablo ave' AND `T2`.`city` = 'albany'
 
 **3. Simplification and Optimization:**
 
@@ -137,8 +137,8 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **Final Optimized SQL Query:**
 ```sql
 SELECT COUNT(T1.id_restaurant)
- FROM {BQ_PROJECT_ID}.restaurant.generalinfo AS T1
- INNER JOIN {BQ_PROJECT_ID}.restaurant.location AS T2 ON T1.id_restaurant = T2.id_restaurant
+ FROM `{BQ_DATA_PROJECT_ID}`.restaurant.generalinfo AS T1
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.restaurant.location AS T2 ON T1.id_restaurant = T2.id_restaurant
  WHERE T1.food_type = 'thai' AND T1.city = 'albany' AND T2.street_name = 'san pablo ave'
 ```
 
@@ -147,19 +147,19 @@ Example 2
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.financial.account (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.financial.account (
    account_id INT64,
    district_id INT64,
    frequency STRING,
    date DATE,
 );
-CREATE TABLE {BQ_PROJECT_ID}.financial.client (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.financial.client (
    client_id INT64,
    gender STRING,
    birth_date DATE,
    district_id INT64,
 );
-CREATE TABLE {BQ_PROJECT_ID}.financial.district (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.financial.district (
    district_id INT64,
    a4 STRING OPTIONS(description="Assuming A4 and A11 are strings due to examples"),
    a11 STRING,
@@ -179,26 +179,26 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 * **Main Question:** What is the gender of the youngest client who opened account in the lowest average salary branch?
    * **Analysis:** The question is asking about `gender`, and it appears in the table `financial.client`. We will use this as the output column, selecting it from the youngest client in the lowest average salary branch.
-   * **Pseudo **Final Optimized SQL Query:**** SELECT `T1`.`gender` FROM `{BQ_PROJECT_ID}.financial.client` AS `T1` WHERE <youngest client in the lowest average salary branch>
+   * **Pseudo **Final Optimized SQL Query:**** SELECT `T1`.`gender` FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1` WHERE <youngest client in the lowest average salary branch>
 
    * **Sub-question 1:** youngest client in the lowest average salary branch
        * **Analysis:** According to the hint, we need to use the `A11` from `financial.district` to get the salary info, and the youngest client can be obtained from using the `birth_date` column of table `financial.client`. The items between these two tables can be INNER JOIN using district_id.
-       * **Pseudo SQL:** SELECT `T1`.`client_id` FROM `{BQ_PROJECT_ID}.financial.client` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.financial.district` AS `T2` ON `T1`.`district_id` = `T2`.`district_id` WHERE <lowest average salary branch> ORDER BY `T1`.`birth_date` DESC NULLS LAST LIMIT 1
+       * **Pseudo SQL:** SELECT `T1`.`client_id` FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.financial.district` AS `T2` ON `T1`.`district_id` = `T2`.`district_id` WHERE <lowest average salary branch> ORDER BY `T1`.`birth_date` DESC NULLS LAST LIMIT 1
 
        * **Sub-question 1.1:** lowest average salary branch
            * **Analysis:** We can get the lowest average salary branch using order by `A11` ASC and pick top 1. The column `A11` is not NULLABLE, so we do not need to add "IS NOT NULL" filter
-           * **Pseudo SQL:**  SELECT `district_id` FROM `{BQ_PROJECT_ID}.financial.district` ORDER BY `A11` ASC LIMIT 1
+           * **Pseudo SQL:**  SELECT `district_id` FROM `{BQ_DATA_PROJECT_ID}.financial.district` ORDER BY `A11` ASC LIMIT 1
 
 **2. Assembling SQL:**
 
 * **Sub-question 1.1 (lowest average salary branch):**
-   * **SQL:** SELECT `district_id` FROM `{BQ_PROJECT_ID}.financial.district` ORDER BY `A11` ASC LIMIT 1
+   * **SQL:** SELECT `district_id` FROM `{BQ_DATA_PROJECT_ID}.financial.district` ORDER BY `A11` ASC LIMIT 1
 
 * **Sub-question 1 (youngest client in the lowest average salary branch):**
-   * **SQL:** SELECT `T1`.`client_id` FROM `{BQ_PROJECT_ID}.financial.client` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.financial.district` AS `T2` ON `T1`.`district_id` = `T2`.`district_id` WHERE `T2`.`district_id` IN (SELECT `district_id` FROM `financial.district` ORDER BY `A11` ASC LIMIT 1) ORDER BY `T1`.`birth_date` DESC NULLS LAST LIMIT 1
+   * **SQL:** SELECT `T1`.`client_id` FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.financial.district` AS `T2` ON `T1`.`district_id` = `T2`.`district_id` WHERE `T2`.`district_id` IN (SELECT `district_id` FROM `financial.district` ORDER BY `A11` ASC LIMIT 1) ORDER BY `T1`.`birth_date` DESC NULLS LAST LIMIT 1
 
 * **Main Question (gender of the client):**
-   * **SQL:** SELECT `T1`.`gender` FROM `{BQ_PROJECT_ID}.financial.client` AS `T1` WHERE `T1`.`client_id` = (SELECT `T1`.`client_id` FROM `{BQ_PROJECT_ID}.financial.client` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.financial.district` AS `T2` ON `T1`.`district_id` = `T2`.`district_id` WHERE `T2`.`district_id` IN (SELECT `district_id` FROM `{BQ_PROJECT_ID}.financial.district` ORDER BY `A11` ASC LIMIT 1) ORDER BY `T1`.`birth_date` DESC NULLS LAST LIMIT 1)
+   * **SQL:** SELECT `T1`.`gender` FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1` WHERE `T1`.`client_id` = (SELECT `T1`.`client_id` FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.financial.district` AS `T2` ON `T1`.`district_id` = `T2`.`district_id` WHERE `T2`.`district_id` IN (SELECT `district_id` FROM `{BQ_DATA_PROJECT_ID}.financial.district` ORDER BY `A11` ASC LIMIT 1) ORDER BY `T1`.`birth_date` DESC NULLS LAST LIMIT 1)
 
 **3. Simplification and Optimization:**
 
@@ -207,8 +207,8 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **Final Optimized SQL Query:**
 ```sql
 SELECT `T1`.`gender`
- FROM `{BQ_PROJECT_ID}.financial.client` AS `T1`
- INNER JOIN `{BQ_PROJECT_ID}.financial.district` AS `T2`
+ FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1`
+ INNER JOIN `{BQ_DATA_PROJECT_ID}.financial.district` AS `T2`
  ON `T1`.`district_id` = `T2`.`district_id`
  ORDER BY `T2`.`A11` ASC, `T1`.`birth_date` DESC NULLS LAST
  LIMIT 1
@@ -218,20 +218,20 @@ Example 3 (dividing into two parallel sub-questions)
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.olympics.games
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.olympics.games
 (
  id INT64,
  games_year INT64 OPTIONS(description="description: the year of the game"),
  games_name STRING,
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.olympics.games_city
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.olympics.games_city
 (
  games_id INT64,
  city_id INT64 OPTIONS(description="the id of the city that held the game Maps to city(id)"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.olympics.city
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.olympics.city
 (
  id INT64,
  city_name STRING,
@@ -251,11 +251,11 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 * **Main Question:** From 1900 to 1992, how many games did London host?
    * **Analysis:** The question requires us to count games, which are represented by the `id` column in the `olympics.games` table.  We need to filter these games based on two criteria: they were hosted in London and occurred between 1900 and 1992.
-   * **Pseudo SQL:** SELECT COUNT(`T1`.`id`) FROM `{BQ_PROJECT_ID}.olympics.games` AS `T1`  WHERE  <games are in London> AND <games year between 1900 and 1992>
+   * **Pseudo SQL:** SELECT COUNT(`T1`.`id`) FROM `{BQ_DATA_PROJECT_ID}.olympics.games` AS `T1`  WHERE  <games are in London> AND <games year between 1900 and 1992>
 
    * **Sub-question 1:** games are in London
        * **Analysis:**  To determine which games were hosted in London, we need to join the `olympics.games` table with the `olympics.games_city` table on `games_id` and then join with the `city` table on `city_id`. We'll use `INNER JOIN` to ensure only matching records are considered.  The filtering on 'London' will be applied to the `city_name` column.
-       * **Pseudo SQL:**  `T1`.`id` IN (SELECT `T1`.`games_id` FROM `{BQ_PROJECT_ID}.olympics.games_city` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.olympics.city` AS `T2` ON `T1`.`city_id` = `T2`.`id` WHERE `T2`.`city_name` = 'London')
+       * **Pseudo SQL:**  `T1`.`id` IN (SELECT `T1`.`games_id` FROM `{BQ_DATA_PROJECT_ID}.olympics.games_city` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.olympics.city` AS `T2` ON `T1`.`city_id` = `T2`.`id` WHERE `T2`.`city_name` = 'London')
 
    * **Sub-question 2:** games year between 1900 and 1992
        * **Analysis:** This involves filtering the `olympics.games` table directly based on the `games_year` column using the `BETWEEN` operator.
@@ -264,24 +264,24 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **2. Assembling SQL:**
 
 * **Sub-question 1 (games are in London):**
-   * **SQL:**  `T1`.`id` IN (SELECT `T1`.`games_id` FROM `{BQ_PROJECT_ID}.olympics.games_city` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.olympics.city` AS `T2` ON `T1`.`city_id` = `T2`.`id` WHERE `T2`.`city_name` = 'London')
+   * **SQL:**  `T1`.`id` IN (SELECT `T1`.`games_id` FROM `{BQ_DATA_PROJECT_ID}.olympics.games_city` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.olympics.city` AS `T2` ON `T1`.`city_id` = `T2`.`id` WHERE `T2`.`city_name` = 'London')
 
 * **Sub-question 2 (games year between 1900 and 1992):**
    * **SQL:**  `T1`.`games_year` BETWEEN 1900 AND 1992
 
 * **Main Question (count of games):**
-   * **SQL:** SELECT COUNT(`T1`.`id`) FROM `{BQ_PROJECT_ID}.olympics.games` AS `T1` WHERE `T1`.`id` IN (SELECT `T1`.`games_id` FROM `{BQ_PROJECT_ID}.olympics.games_city` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.olympics.city` AS `T2` ON `T1`.`city_id` = `T2`.`id` WHERE `T2`.`city_name` = 'London') AND `T1`.`games_year` BETWEEN 1900 AND 1992
+   * **SQL:** SELECT COUNT(`T1`.`id`) FROM `{BQ_DATA_PROJECT_ID}.olympics.games` AS `T1` WHERE `T1`.`id` IN (SELECT `T1`.`games_id` FROM `{BQ_DATA_PROJECT_ID}.olympics.games_city` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.olympics.city` AS `T2` ON `T1`.`city_id` = `T2`.`id` WHERE `T2`.`city_name` = 'London') AND `T1`.`games_year` BETWEEN 1900 AND 1992
 
 **3. Simplification and Optimization:**
 
-* The nested query can be converted into a more efficient `JOIN` operation. We'll use `INNER JOIN` to combine `{BQ_PROJECT_ID}.olympics.games`, `{BQ_PROJECT_ID}.olympics.games_city`, and `{BQ_PROJECT_ID}.olympics.city` based on the relationships between them.
+* The nested query can be converted into a more efficient `JOIN` operation. We'll use `INNER JOIN` to combine ``{BQ_DATA_PROJECT_ID}`.olympics.games`, ``{BQ_DATA_PROJECT_ID}`.olympics.games_city`, and ``{BQ_DATA_PROJECT_ID}`.olympics.city` based on the relationships between them.
 
 **Final Optimized SQL Query:**
 ```sql
 SELECT COUNT(T3.id)
- FROM {BQ_PROJECT_ID}.olympics.games_city AS T1
- INNER JOIN {BQ_PROJECT_ID}.olympics.city AS T2 ON T1.city_id = T2.id
- INNER JOIN {BQ_PROJECT_ID}.olympics.games AS T3 ON T1.games_id = T3.id
+ FROM `{BQ_DATA_PROJECT_ID}`.olympics.games_city AS T1
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.olympics.city AS T2 ON T1.city_id = T2.id
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.olympics.games AS T3 ON T1.games_id = T3.id
  WHERE T2.city_name = 'London' AND T3.games_year
  BETWEEN 1900 AND 1992
 ```
@@ -291,7 +291,7 @@ Example 4 (When it's not clear which column should be used for a string matching
 
 **************************
 【Database Info】
-CREATE TABLE `{BQ_PROJECT_ID}.academics.student_programs` (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}.academics.student_programs` (
    `Program Type` STRING,
    `Participants (Ages 10-15)` FLOAT64,
    `Total Enrollment (Ages 10-15)` FLOAT64,
@@ -312,10 +312,10 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 * **Main Question:** Please list the lowest three participation rates for students aged 10-15 in online programs.
    * **Analysis:** The question is asking about the ratio between `Participants (Ages 10-15)` and `Total Enrollment (Ages 10-15)`. We need to filter the data to only include online programs.
-   * **Pseudo SQL:** SELECT (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) FROM `{BQ_PROJECT_ID}.academics.student_programs` WHERE <online programs> ORDER BY (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) ASC NULLS LAST LIMIT 3
+   * **Pseudo SQL:** SELECT (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) FROM `{BQ_DATA_PROJECT_ID}.academics.student_programs` WHERE <online programs> ORDER BY (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) ASC NULLS LAST LIMIT 3
 
    * **Sub-question 1:** online programs
-       * **Analysis:** We will get the information from the table `{BQ_PROJECT_ID}.academics.student_programs`.
+       * **Analysis:** We will get the information from the table `{BQ_DATA_PROJECT_ID}.academics.student_programs`.
        * **Pseudo SQL:** SELECT program_id FROM `academics.student_programs` WHERE <condition for online programs>
 
        * **Sub-question 1.1:** condition for online programs (Note: This requires external knowledge or database schema information. We need to identify which column(s) indicate "online programs".)
@@ -328,10 +328,10 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
    * **SQL:** LOWER(`School Category`) LIKE '%online%' OR LOWER(`Program Type`) LIKE '%online%'
 
 * **Sub-question 1 (online programs):**
-   * **SQL:** SELECT program_id FROM `{BQ_PROJECT_ID}.academics.student_programs` WHERE LOWER(`School Category`) LIKE '%online%' OR LOWER(`Program Type`) LIKE '%online%'
+   * **SQL:** SELECT program_id FROM `{BQ_DATA_PROJECT_ID}.academics.student_programs` WHERE LOWER(`School Category`) LIKE '%online%' OR LOWER(`Program Type`) LIKE '%online%'
 
 * **Main Question (lowest three participation rates):**
-   * **SQL:** SELECT (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) FROM `{BQ_PROJECT_ID}.academics.student_programs` WHERE program_id IN (SELECT program_id FROM `{BQ_PROJECT_ID}.academics.student_programs` WHERE LOWER(`School Category`) LIKE '%online%' OR LOWER(`Program Type`) LIKE '%online%') ORDER BY (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) ASC NULLS LAST LIMIT 3
+   * **SQL:** SELECT (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) FROM `{BQ_DATA_PROJECT_ID}.academics.student_programs` WHERE program_id IN (SELECT program_id FROM `{BQ_DATA_PROJECT_ID}.academics.student_programs` WHERE LOWER(`School Category`) LIKE '%online%' OR LOWER(`Program Type`) LIKE '%online%') ORDER BY (`Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)`) ASC NULLS LAST LIMIT 3
 
 **3. Simplification and Optimization:**
 
@@ -339,7 +339,7 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 **Final Optimized SQL Query:**
 ```sql
-SELECT `Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)` FROM `{BQ_PROJECT_ID}.academics.student_programs`
+SELECT `Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)` FROM `{BQ_DATA_PROJECT_ID}.academics.student_programs`
  WHERE LOWER(`School Category`) LIKE '%online%' OR LOWER(`Program Type`) LIKE '%online%'
  AND `Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)` IS NOT NULL
  ORDER BY `Participants (Ages 10-15)` / `Total Enrollment (Ages 10-15)` ASC NULLS LAST LIMIT 3;
@@ -350,7 +350,7 @@ Example 5
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.retails.employees (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.retails.employees (
    employee_id INT64,
    department_id INT64,
    salary INT64,
@@ -370,20 +370,20 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 * **Main Question:** How many employees earn over $100,000?
 
-   * **Pseudo SQL:** SELECT COUNT(*) FROM {BQ_PROJECT_ID}.retails.employees WHERE <employees earning over 100000>
+   * **Pseudo SQL:** SELECT COUNT(*) FROM {BQ_DATA_PROJECT_ID}.retails.employees WHERE <employees earning over 100000>
    * **Analysis:** The question is asking about the COUNT of employees. We need to filter the data to only include employees earning over $100,000.
 
    * **Sub-question 1:** employees earning over 100000
        * **Analysis:** Simple condition on the `salary` column.
-       * **Pseudo SQL:** SELECT employee_id FROM {BQ_PROJECT_ID}.retails.employees WHERE salary > 100000
+       * **Pseudo SQL:** SELECT employee_id FROM {BQ_DATA_PROJECT_ID}.retails.employees WHERE salary > 100000
 
 **2. Assembling SQL:**
 
 * **Sub-question 1 (employees earning over 100000):**
-   * **SQL:** SELECT employee_id FROM {BQ_PROJECT_ID}.retails.employees WHERE salary > 100000
+   * **SQL:** SELECT employee_id FROM `{BQ_DATA_PROJECT_ID}`.retails.employees WHERE salary > 100000
 
 * **Main Question (count of employees):**
-   * **SQL:** SELECT COUNT(*) FROM {BQ_PROJECT_ID}.retails.employees WHERE employee_id IN (SELECT employee_id FROM {BQ_PROJECT_ID}.retails.employees WHERE salary > 100000)
+   * **SQL:** SELECT COUNT(*) FROM `{BQ_DATA_PROJECT_ID}`.retails.employees WHERE employee_id IN (SELECT employee_id FROM `{BQ_DATA_PROJECT_ID}`.retails.employees WHERE salary > 100000)
 
 **3. Simplification and Optimization:**
 
@@ -391,7 +391,7 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 **Final Optimized SQL Query:**
 ```sql
-SELECT COUNT(*) FROM {BQ_PROJECT_ID}.retails.employees WHERE salary > 100000;
+SELECT COUNT(*) FROM `{BQ_DATA_PROJECT_ID}`.retails.employees WHERE salary > 100000;
 ```
 
 ===========
@@ -399,14 +399,14 @@ Example 6
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.airlines.Airlines
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.airlines.Airlines
 (
  FL_DATE STRING OPTIONS(description="flight date"),
  ORIGIN STRING OPTIONS(description="airport of origin"),
  DEST STRING OPTIONS(description="Destination airport"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.airlines.Airports
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.airlines.Airports
 (
  Code STRING,
  Description STRING,
@@ -428,19 +428,19 @@ flights from refers to ORIGIN; San Diego International airport refers to Descrip
 
 * **Main Question:** How many flights were there from San Diego International airport to Los Angeles International airport in the August of 2018?
    * **Analysis:** The question asks for a count of flights, which can be obtained by counting the `FL_DATE` entries in the `airlines.Airlines` table. We need to apply three filters: flights originating from San Diego International, flights destined for Los Angeles International, and flights occurring in August 2018.
-   * **Pseudo SQL:** SELECT COUNT(`FL_DATE`) FROM `{BQ_PROJECT_ID}.airlines.Airlines` WHERE <flights are in August 2018> AND <flights are from San Diego International> AND <flights are to Los Angeles International>
+   * **Pseudo SQL:** SELECT COUNT(`FL_DATE`) FROM `{BQ_DATA_PROJECT_ID}.airlines.Airlines` WHERE <flights are in August 2018> AND <flights are from San Diego International> AND <flights are to Los Angeles International>
 
    * **Sub-question 1:** flights are in August 2018
-       * **Analysis:** This filter can be directly applied to the `{BQ_PROJECT_ID}.airlines.Airlines` table using the `FL_DATE` column and the `LIKE` operator, as indicated by the evidence.
+       * **Analysis:** This filter can be directly applied to the `{BQ_DATA_PROJECT_ID}.airlines.Airlines` table using the `FL_DATE` column and the `LIKE` operator, as indicated by the evidence.
        * **Pseudo SQL:** `FL_DATE` LIKE '2018/8%'
 
    * **Sub-question 2:** flights are from San Diego International
-       * **Analysis:**  We need to find the airport code (`ORIGIN`) corresponding to 'San Diego, CA: San Diego International' from the `{BQ_PROJECT_ID}.airlines.Airports` table and use it to filter the `airlines.Airlines` table. This requires joining `airlines.Airports` and `airlines.Airlines` based on `airlines.Airports`.`Code` = `airlines.Airlines`.`ORIGIN`.
-       * **Pseudo SQL:** `ORIGIN` = (SELECT `T2`.`ORIGIN` FROM `{BQ_PROJECT_ID}.airlines.Airports` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.airlines.Airlines` AS `T2` ON `T1`.`Code` = `T2`.`ORIGIN` WHERE `T1`.`Description` = 'San Diego, CA: San Diego International')
+       * **Analysis:**  We need to find the airport code (`ORIGIN`) corresponding to 'San Diego, CA: San Diego International' from the `{BQ_DATA_PROJECT_ID}.airlines.Airports` table and use it to filter the `airlines.Airlines` table. This requires joining `airlines.Airports` and `airlines.Airlines` based on `airlines.Airports`.`Code` = `airlines.Airlines`.`ORIGIN`.
+       * **Pseudo SQL:** `ORIGIN` = (SELECT `T2`.`ORIGIN` FROM `{BQ_DATA_PROJECT_ID}.airlines.Airports` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.airlines.Airlines` AS `T2` ON `T1`.`Code` = `T2`.`ORIGIN` WHERE `T1`.`Description` = 'San Diego, CA: San Diego International')
 
    * **Sub-question 3:** flights are to Los Angeles International
        * **Analysis:** Similar to sub-question 2, we need to find the airport code (`DEST`) for 'Los Angeles, CA: Los Angeles International' from the `airlines.Airports` table and use it to filter the `airlines.Airlines` table. This also requires joining `airlines.Airports` and `airlines.Airlines`, but this time on `airlines.Airports`.`Code` = `airlines.Airlines`.`DEST`.
-       * **Pseudo SQL:** `DEST` = (SELECT `T4`.`DEST` FROM `{BQ_PROJECT_ID}.airlines.Airports` AS `T3` INNER JOIN `{BQ_PROJECT_ID}.airlines.Airlines` AS `T4` ON `T3`.`Code` = `T4`.`DEST` WHERE `T3`.`Description` = 'Los Angeles, CA: Los Angeles International')
+       * **Pseudo SQL:** `DEST` = (SELECT `T4`.`DEST` FROM `{BQ_DATA_PROJECT_ID}.airlines.Airports` AS `T3` INNER JOIN `{BQ_DATA_PROJECT_ID}.airlines.Airlines` AS `T4` ON `T3`.`Code` = `T4`.`DEST` WHERE `T3`.`Description` = 'Los Angeles, CA: Los Angeles International')
 
 **2. Assembling SQL:**
 
@@ -448,13 +448,13 @@ flights from refers to ORIGIN; San Diego International airport refers to Descrip
    * **SQL:** `FL_DATE` LIKE '2018/8%'
 
 * **Sub-question 2 (flights are from San Diego International):**
-   * **SQL:** `ORIGIN` = (SELECT DISTINCT `T2`.`ORIGIN` FROM `{BQ_PROJECT_ID}.airlines.Airports` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.airlines.Airlines` AS `T2` ON `T1`.`Code` = `T2`.`ORIGIN` WHERE `T1`.`Description` = 'San Diego, CA: San Diego International')
+   * **SQL:** `ORIGIN` = (SELECT DISTINCT `T2`.`ORIGIN` FROM `{BQ_DATA_PROJECT_ID}.airlines.Airports` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.airlines.Airlines` AS `T2` ON `T1`.`Code` = `T2`.`ORIGIN` WHERE `T1`.`Description` = 'San Diego, CA: San Diego International')
 
 * **Sub-question 3 (flights are to Los Angeles International):**
-   * **SQL:** `DEST` = (SELECT DISTINCT `T4`.`DEST` FROM `{BQ_PROJECT_ID}.airlines.Airports` AS `T3` INNER JOIN `{BQ_PROJECT_ID}.airlines.Airlines` AS `T4` ON `T3`.`Code` = `T4`.`DEST` WHERE `T3`.`Description` = 'Los Angeles, CA: Los Angeles International')
+   * **SQL:** `DEST` = (SELECT DISTINCT `T4`.`DEST` FROM `{BQ_DATA_PROJECT_ID}.airlines.Airports` AS `T3` INNER JOIN `{BQ_DATA_PROJECT_ID}.airlines.Airlines` AS `T4` ON `T3`.`Code` = `T4`.`DEST` WHERE `T3`.`Description` = 'Los Angeles, CA: Los Angeles International')
 
 * **Main Question (count of flights):**
-   * **SQL:** SELECT COUNT(`FL_DATE`) FROM `{BQ_PROJECT_ID}.airlines.Airlines` WHERE `FL_DATE` LIKE '2018/8%' AND `ORIGIN` = (SELECT `T2`.`ORIGIN` FROM `{BQ_PROJECT_ID}.airlines.Airports` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.airlines.Airlines` AS `T2` ON `T1`.`Code` = `T2`.`ORIGIN` WHERE `T1`.`Description` = 'San Diego, CA: San Diego International') AND `DEST` = (SELECT `T4`.`DEST` FROM `{BQ_PROJECT_ID}.airlines.Airports` AS `T3` INNER JOIN `{BQ_PROJECT_ID}.airlines.Airlines` AS `T4` ON `T3`.`Code` = `T4`.`DEST` WHERE `T3`.`Description` = 'Los Angeles, CA: Los Angeles International')
+   * **SQL:** SELECT COUNT(`FL_DATE`) FROM `{BQ_DATA_PROJECT_ID}.airlines.Airlines` WHERE `FL_DATE` LIKE '2018/8%' AND `ORIGIN` = (SELECT `T2`.`ORIGIN` FROM `{BQ_DATA_PROJECT_ID}.airlines.Airports` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.airlines.Airlines` AS `T2` ON `T1`.`Code` = `T2`.`ORIGIN` WHERE `T1`.`Description` = 'San Diego, CA: San Diego International') AND `DEST` = (SELECT `T4`.`DEST` FROM `{BQ_DATA_PROJECT_ID}.airlines.Airports` AS `T3` INNER JOIN `{BQ_DATA_PROJECT_ID}.airlines.Airlines` AS `T4` ON `T3`.`Code` = `T4`.`DEST` WHERE `T3`.`Description` = 'Los Angeles, CA: Los Angeles International')
 
 **3. Simplification and Optimization:**
 
@@ -463,17 +463,17 @@ flights from refers to ORIGIN; San Diego International airport refers to Descrip
 **Final Optimized SQL Query:**
 ```sql
 SELECT COUNT(FL_DATE)
- FROM {BQ_PROJECT_ID}.airlines.Airlines
+ FROM `{BQ_DATA_PROJECT_ID}`.airlines.Airlines
  WHERE FL_DATE LIKE '2018/8%'
  AND ORIGIN = (
    SELECT DISTINCT T2.ORIGIN
-   FROM {BQ_PROJECT_ID}.airlines.Airports AS T1
-   INNER JOIN {BQ_PROJECT_ID}.airlines.Airlines AS T2 ON T1.Code = T2.ORIGIN
+   FROM `{BQ_DATA_PROJECT_ID}`.airlines.Airports AS T1
+   INNER JOIN `{BQ_DATA_PROJECT_ID}`.airlines.Airlines AS T2 ON T1.Code = T2.ORIGIN
    WHERE T1.Description = 'San Diego, CA: San Diego International' )
  AND DEST = (
    SELECT DISTINCT T4.DEST
-   FROM {BQ_PROJECT_ID}.airlines.Airports AS T3
-   INNER JOIN {BQ_PROJECT_ID}.airlines.Airlines AS T4 ON T3.Code = T4.DEST
+   FROM `{BQ_DATA_PROJECT_ID}`.airlines.Airports AS T3
+   INNER JOIN `{BQ_DATA_PROJECT_ID}`.airlines.Airlines AS T4 ON T3.Code = T4.DEST
    WHERE T3.Description = 'Los Angeles, CA: Los Angeles International' )
 ```
 
@@ -482,20 +482,20 @@ Example 7
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.food_inspection.businesses
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.food_inspection.businesses
 (
        `business_id` INT64,
        `name` STRING OPTIONS(description="the name of the eatery"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.food_inspection.inspections
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.food_inspection.inspections
 (
        `business_id` INT64 OPTIONS(description="the unique id of the business"),
        `score` INT64 OPTIONS(description="description: the inspection score"),
        `date` DATE,
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.food_inspection.violations
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.food_inspection.violations
 (
        `business_id` INT64,
        `date` DATE,
@@ -516,24 +516,24 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **1. Divide and Conquer:**
 
 * **Main Question:** What are the names of the establishments that met all the required standards for 4 consecutive years?
-   * **Analysis:** We need to find the names of businesses that have a score of 100 for 4 consecutive years. The `food_inspection.businesses` table contains the `name` and the `{BQ_PROJECT_ID}.food_inspection.inspections` table contains the `score` and `date`. We will need to join these tables and filter by score. To check for consecutive years, we'll need to group by business and year, then check if each group has a count of 4.
-   * **Pseudo SQL:** SELECT DISTINCT `T2`.`name` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE  <score = 100> AND <4 consecutive years>
+   * **Analysis:** We need to find the names of businesses that have a score of 100 for 4 consecutive years. The `food_inspection.businesses` table contains the `name` and the `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` table contains the `score` and `date`. We will need to join these tables and filter by score. To check for consecutive years, we'll need to group by business and year, then check if each group has a count of 4.
+   * **Pseudo SQL:** SELECT DISTINCT `T2`.`name` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE  <score = 100> AND <4 consecutive years>
 
    * **Sub-question 1:** score = 100
-       * **Analysis:** This is a simple filter on the `{BQ_PROJECT_ID}.food_inspection.inspections` table where we select rows with a `score` of 100.
+       * **Analysis:** This is a simple filter on the `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` table where we select rows with a `score` of 100.
        * **Pseudo SQL:** `T1`.`score` = 100
 
    * **Sub-question 2:** 4 consecutive years
        * **Analysis:** This is more complex. We need to group the inspections by business and year, then check if the count for each group is 4. To get the year from the `date` column, we'll use the `FORMAT_DATE('%Y', date)` function. We'll also need to use window functions to assign a rank to each year within a business, allowing us to check for consecutiveness.
-       * **Pseudo SQL:** `T2`.`name` IN (SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, date(`T4`.`years` || '-01-01', '-' || (`T4`.`rowNumber` - 1) || ' years') HAVING COUNT(`T4`.`years`) = 4)
+       * **Pseudo SQL:** `T2`.`name` IN (SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, date(`T4`.`years` || '-01-01', '-' || (`T4`.`rowNumber` - 1) || ' years') HAVING COUNT(`T4`.`years`) = 4)
 
        * **Sub-question 2.1:** Get distinct businesses and their inspection years where the score is 100
-           * **Analysis:** We need to join `{BQ_PROJECT_ID}.food_inspection.inspections` and `{BQ_PROJECT_ID}.food_inspection.businesses` tables, filter by `score` = 100, and select distinct business names and their inspection years.
-           * **Pseudo SQL:** SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100
+           * **Analysis:** We need to join `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` and `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` tables, filter by `score` = 100, and select distinct business names and their inspection years.
+           * **Pseudo SQL:** SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100
 
        * **Sub-question 2.2:** Assign a rank to each year within a business
            * **Analysis:** We'll use the `row_number()` window function to assign a rank to each year within each business, ordered chronologically. This will help us identify consecutive years later.
-           * **Pseudo SQL:** SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100` AS `T3`
+           * **Pseudo SQL:** SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100` AS `T3`
 
        * **Sub-question 2.3:** Group by business and consecutive year groups and check if the count is 4
            * **Analysis:** We'll group the results by business name and a calculated date representing the start of each potential 4-year period. This date is calculated by adding (`rowNumber` - 1) years to the first day of the year extracted from the `years` column. We then filter for groups with a count of 4, indicating 4 consecutive years.
@@ -542,19 +542,19 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **2. Assembling SQL:**
 
 * **Sub-question 2.1 (distinct businesses and years with score 100):**
-   * **SQL:** SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100
+   * **SQL:** SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100
 
 * **Sub-question 2.2 (assign rank to each year within a business):**
-   * **SQL:** SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`
+   * **SQL:** SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`
 
 * **Sub-question 2.3 (group by business and consecutive year groups):**
-   * **SQL:** SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR)  HAVING COUNT(`T4`.`years`) = 4
+   * **SQL:** SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR)  HAVING COUNT(`T4`.`years`) = 4
 
 * **Sub-question 2 (4 consecutive years):**
-   * **SQL:** `T2`.`name` IN (SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR)  HAVING COUNT(`T4`.`years`) = 4)
+   * **SQL:** `T2`.`name` IN (SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR)  HAVING COUNT(`T4`.`years`) = 4)
 
 * **Main Question (names of establishments):**
-   * **SQL:** SELECT DISTINCT `T2`.`name` FROM `{BQ_PROJECT_ID}.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE  `T1`.`score` = 100 AND `T2`.`name` IN (SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR) HAVING COUNT(`T4`.`years`) = 4)
+   * **SQL:** SELECT DISTINCT `T2`.`name` FROM `{BQ_DATA_PROJECT_ID}.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE  `T1`.`score` = 100 AND `T2`.`name` IN (SELECT `T4`.`name` FROM (SELECT `T3`.`name`, `T3`.`years`, row_number() OVER (PARTITION BY `T3`.`name` ORDER BY `T3`.`years`) AS `rowNumber` FROM (SELECT DISTINCT `name`, FORMAT_DATE('%Y', date) AS `years` FROM `{BQ_DATA_PROJECT_ID}.food_inspection.inspections` AS `T1` INNER JOIN `{BQ_DATA_PROJECT_ID}.food_inspection.businesses` AS `T2` ON `T1`.`business_id` = `T2`.`business_id` WHERE `T1`.`score` = 100) AS `T3`) AS `T4` GROUP BY `T4`.`name`, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR) HAVING COUNT(`T4`.`years`) = 4)
 
 **3. Simplification and Optimization:**
 
@@ -566,8 +566,8 @@ SELECT DISTINCT T4.name
  FROM ( SELECT T3.name, T3.years, row_number()
  OVER (PARTITION BY T3.name ORDER BY T3.years)
  AS rowNumber FROM ( SELECT DISTINCT name, FORMAT_DATE('%Y', date)
- AS years FROM {BQ_PROJECT_ID}.food_inspection.inspections AS T1
- INNER JOIN {BQ_PROJECT_ID}.food_inspection.businesses AS T2 ON T1.business_id = T2.business_id
+ AS years FROM `{BQ_DATA_PROJECT_ID}`.food_inspection.inspections AS T1
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.food_inspection.businesses AS T2 ON T1.business_id = T2.business_id
  WHERE T1.score = 100 ) AS T3 ) AS T4
  GROUP BY T4.name, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR) HAVING COUNT(T4.years) = 4
 ```
@@ -657,21 +657,21 @@ Assembling SQL
 
 **Final Optimized SQL Query:**
 ```sql
-SELECT 
+SELECT
   FORMAT_DATE('%A', PARSE_DATE('%Y-%m-%d', date)) AS day,
   COUNT(*) AS headache_count
-FROM 
+FROM
   `bigquery-public-data`.`covid19_symptom_search`.`symptom_search_country_daily`
-GROUP BY 
+GROUP BY
   day
-ORDER BY 
+ORDER BY
   headache_count DESC
 LIMIT 1;
 ```
 
 Now is the real question, following the instruction and examples, generate the GoogleSQL with Recursive Divide-and-Conquer approach.
 Follow all steps from the strategy. When you get to the final query, output the query string ONLY in the format ```sql ... ```. Make sure you only output one single query.
-Table names always should be exactly the same as the table names mentioned in the database schema, for example, `{BQ_PROJECT_ID}.airlines.Airlines` instead of `Airlines`.
+Table names always should be exactly the same as the table names mentioned in the database schema, for example, `{BQ_DATA_PROJECT_ID}.airlines.Airlines` instead of `Airlines`.
 
 **************************
 【Table creation statements】

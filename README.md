@@ -57,13 +57,13 @@ source .venv/bin/activate
 2. create BQ table
 
 ```bash
-uv python3 data_science/utils/create_bq_table.py
+uv run python3 data_science/utils/create_bq_table.py
 ```
 
 3. Setup BQML as a RAG corpus:
 
 ```bash
-uv python3 data_science/utils/reference_guide_RAG.py
+uv run python3 data_science/utils/reference_guide_RAG.py
 ```
 
 4. Run agent locally via web
@@ -115,7 +115,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 Next, you need to create a `.whl` file for your agent. From the `data-science` directory, run this command:
 
 ```sh
-uv build --format=wheel --output=deployment
+uv build --wheel --out-dir deployment
 ```
 
 This will create a file named `data_science-0.1-py3-none-any.whl` in the `deployment` directory.
@@ -123,13 +123,13 @@ This will create a file named `data_science-0.1-py3-none-any.whl` in the `dep
 Now, navigate to the deployment directory: 
 
 ```sh
-cd deployment/ 
+cd deployment/
 ```
 
 Then run the below command to create a staging bucket in your GCP project and deploy the agent to Vertex AI Agent Engine:
 
 ```sh
- run python deploy.py --create
+python3 deploy.py --create
 ```
 
 First, it will try to create a code extension and should return the folloiwng message:
@@ -154,7 +154,7 @@ Once you have successfully deployed your agent, you can interact with it using t
 # export GOOGLE_CLOUD_STORAGE_BUCKET="${PROJECT_ID}-adk-staging" # if error, uncomment and re-run commands
 export RESOURCE_ID=526384594727993344
 export USER_ID="user1"
-uv run python test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
+uv run python3 test_deployment.py --resource_id=$RESOURCE_ID --user_id=$USER_ID
 ```
 
 ### Register Agent in Agentspace

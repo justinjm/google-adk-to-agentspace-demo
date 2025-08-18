@@ -47,15 +47,19 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
         if FLAGS.project_id
         else os.getenv("GOOGLE_CLOUD_PROJECT")
     )
-    location = FLAGS.location if FLAGS.location else os.getenv("GOOGLE_CLOUD_LOCATION")
-
-    # Default bucket name convention if not provided, matching deploy.py
-    default_bucket_name = f"{project_id}-adk-staging" if project_id else None
+    location = (
+        FLAGS.location if FLAGS.location else os.getenv(
+            "GOOGLE_CLOUD_LOCATION")
+    )
     bucket = (
         FLAGS.bucket
         if FLAGS.bucket
-        else os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET", default_bucket_name)
+        else os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
     )
+
+    project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+    location = os.getenv("GOOGLE_CLOUD_LOCATION")
+    bucket = os.getenv("GOOGLE_CLOUD_STORAGE_BUCKET")
 
     if not project_id:
         print("Missing required environment variable: GOOGLE_CLOUD_PROJECT")

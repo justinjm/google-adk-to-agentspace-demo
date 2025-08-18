@@ -121,7 +121,7 @@ class SqlTranslator:
 
     def __init__(
         self,
-        model: str | GeminiModel = "gemini-2.0-flash-001",
+        model: str | GeminiModel = "gemini-2.5-flash",
         temperature: float = 0.5,
         process_input_errors: bool = False,
         process_tool_output_errors: bool = False,

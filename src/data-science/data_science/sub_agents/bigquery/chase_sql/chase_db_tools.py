@@ -27,7 +27,7 @@ from .sql_postprocessor import sql_translator
 
 # pylint: enable=g-importing-member
 
-BQ_PROJECT_ID = os.getenv("BQ_PROJECT_ID")
+BQ_DATA_PROJECT_ID = os.getenv("BQ_DATA_PROJECT_ID")
 
 
 class GenerateSQLType(enum.Enum):
@@ -93,8 +93,8 @@ def initial_bq_nl2sql(
       str: An SQL statement to answer this question.
     """
     print("****** Running agent with ChaseSQL algorithm.")
-    ddl_schema = tool_context.state["database_settings"]["bq_ddl_schema"]
-    project = tool_context.state["database_settings"]["bq_project_id"]
+    bq_schema_and_samples = tool_context.state["database_settings"]["bq_schema_and_samples"]
+    project = tool_context.state["database_settings"]["bq_data_project_id"]
     db = tool_context.state["database_settings"]["bq_dataset_id"]
     transpile_to_bigquery = tool_context.state["database_settings"][
         "transpile_to_bigquery"
@@ -114,11 +114,15 @@ def initial_bq_nl2sql(
 
     if generate_sql_type == GenerateSQLType.DC.value:
         prompt = DC_PROMPT_TEMPLATE.format(
-            SCHEMA=ddl_schema, QUESTION=question, BQ_PROJECT_ID=BQ_PROJECT_ID
+            SCHEMA=bq_schema_and_samples,
+            QUESTION=question,
+            BQ_DATA_PROJECT_ID=BQ_DATA_PROJECT_ID
         )
     elif generate_sql_type == GenerateSQLType.QP.value:
         prompt = QP_PROMPT_TEMPLATE.format(
-            SCHEMA=ddl_schema, QUESTION=question, BQ_PROJECT_ID=BQ_PROJECT_ID
+            SCHEMA=bq_schema_and_samples,
+            QUESTION=question,
+            BQ_DATA_PROJECT_ID=BQ_DATA_PROJECT_ID
         )
     else:
         raise ValueError(f"Unsupported generate_sql_type: {generate_sql_type}")
@@ -141,7 +145,7 @@ def initial_bq_nl2sql(
         # pylint: disable=g-bad-todo
         # pylint: enable=g-bad-todo
         responses: str = translator.translate(
-            responses, ddl_schema=ddl_schema, db=db, catalog=project
+            responses, ddl_schema=bq_schema_and_samples, db=db, catalog=project
         )
 
     return responses

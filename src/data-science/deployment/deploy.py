@@ -17,10 +17,13 @@
 import logging
 import os
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 import vertexai
 from absl import app, flags
 from data_science.agent import root_agent
-from dotenv import load_dotenv
 from google.api_core import exceptions as google_exceptions
 from google.cloud import storage
 from vertexai import agent_engines
@@ -30,8 +33,8 @@ FLAGS = flags.FLAGS
 flags.DEFINE_string("project_id", None, "GCP project ID.")
 flags.DEFINE_string("location", None, "GCP location.")
 flags.DEFINE_string(
-    "bucket", None, "GCP bucket name (without gs:// prefix)."
-)  # Changed flag description
+    "bucket", None, "GCP bucket name (without gs:// prefix)."  # Changed flag description
+)
 flags.DEFINE_string("resource_id", None, "ReasoningEngine resource ID.")
 
 flags.DEFINE_bool("create", False, "Create a new agent.")
@@ -132,7 +135,9 @@ def create(env_vars: dict[str, str]) -> None:
     if not os.path.exists(AGENT_WHL_FILE):
         logger.error("Agent wheel file not found at: %s", AGENT_WHL_FILE)
         # Consider adding instructions here on how to build the wheel file
-        raise FileNotFoundError(f"Agent wheel file not found: {AGENT_WHL_FILE}")
+        raise FileNotFoundError(
+            f"Agent wheel file not found: {AGENT_WHL_FILE}"
+        )
 
     logger.info("Using agent wheel file: %s", AGENT_WHL_FILE)
 
@@ -178,7 +183,8 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
         else os.getenv("GOOGLE_CLOUD_PROJECT")
     )
     location = (
-        FLAGS.location if FLAGS.location else os.getenv("GOOGLE_CLOUD_LOCATION")
+        FLAGS.location if FLAGS.location else os.getenv(
+            "GOOGLE_CLOUD_LOCATION")
     )
     # Default bucket name convention if not provided
     default_bucket_name = f"{project_id}-adk-staging" if project_id else None
@@ -196,10 +202,12 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
     env_vars["BQML_AGENT_MODEL"] = os.getenv("BQML_AGENT_MODEL")
     env_vars["CHASE_NL2SQL_MODEL"] = os.getenv("CHASE_NL2SQL_MODEL")
     env_vars["BQ_DATASET_ID"] = os.getenv("BQ_DATASET_ID")
-    env_vars["BQ_PROJECT_ID"] = os.getenv("BQ_PROJECT_ID")
+    env_vars["BQ_DATA_PROJECT_ID"] = os.getenv("BQ_DATA_PROJECT_ID")
+    env_vars["BQ_COMPUTE_PROJECT_ID"] = os.getenv("BQ_COMPUTE_PROJECT_ID")
     env_vars["BQML_RAG_CORPUS_NAME"] = os.getenv("BQML_RAG_CORPUS_NAME")
     env_vars["CODE_INTERPRETER_EXTENSION_NAME"] = os.getenv(
-        "CODE_INTERPRETER_EXTENSION_NAME")
+        "CODE_INTERPRETER_EXTENSION_NAME"
+    )
     env_vars["NL2SQL_METHOD"] = os.getenv("NL2SQL_METHOD")
 
     logger.info("Using PROJECT: %s", project_id)
@@ -237,7 +245,7 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
 
     try:
         # Setup staging bucket
-        staging_bucket_uri=None
+        staging_bucket_uri = None
         if FLAGS.create:
             staging_bucket_uri = setup_staging_bucket(
                 project_id, location, bucket_name
@@ -247,7 +255,8 @@ def main(argv: list[str]) -> None:  # pylint: disable=unused-argument
         vertexai.init(
             project=project_id,
             location=location,
-            staging_bucket=staging_bucket_uri,  # Staging bucket is passed directly to create/update methods now
+            # Staging bucket is passed directly to create/update methods now
+            staging_bucket=staging_bucket_uri,
         )
 
         if FLAGS.create:

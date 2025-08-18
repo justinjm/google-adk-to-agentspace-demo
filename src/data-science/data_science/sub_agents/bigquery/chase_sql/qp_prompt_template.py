@@ -75,14 +75,14 @@ Example 1
 
 **************************
 【Table creation statements】
-CREATE TABLE {BQ_PROJECT_ID}.restaurant.generalinfo
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.restaurant.generalinfo
 (
  id_restaurant INT64,
  food_type STRING OPTIONS(description="the food type"),
  city STRING OPTIONS(description="the city where the restaurant is located in"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.restaurant.location
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.restaurant.location
 (
  id_restaurant INT64,
  street_name STRING OPTIONS(description="the street name of the restaurant"),
@@ -131,8 +131,8 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **Final Optimized SQL Query:**
 ```sql
 SELECT COUNT(T1.id_restaurant)
- FROM {BQ_PROJECT_ID}.restaurant.generalinfo AS T1
- INNER JOIN {BQ_PROJECT_ID}.restaurant.location AS T2 ON T1.id_restaurant = T2.id_restaurant
+ FROM `{BQ_DATA_PROJECT_ID}`.restaurant.generalinfo AS T1
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.restaurant.location AS T2 ON T1.id_restaurant = T2.id_restaurant
  WHERE T1.food_type = 'thai' AND T1.city = 'albany' AND T2.street_name = 'san pablo ave'
 ```
 
@@ -141,19 +141,19 @@ Example 2
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.financial.account (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.financial.account (
    account_id INT64,
    district_id INT64,
    frequency STRING,
    date DATE,
 );
-CREATE TABLE {BQ_PROJECT_ID}.financial.client (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.financial.client (
    client_id INT64,
    gender STRING,
    birth_date DATE,
    district_id INT64,
 );
-CREATE TABLE {BQ_PROJECT_ID}.financial.district (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.financial.district (
    district_id INT64,
    a4 STRING OPTIONS(description="Assuming A4 and A11 are strings due to examples"),
    a11 STRING,
@@ -204,8 +204,8 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **Final Optimized SQL Query:**
 ```sql
 SELECT `T1`.`gender`
- FROM `{BQ_PROJECT_ID}.financial.client` AS `T1`
- INNER JOIN `{BQ_PROJECT_ID}.financial.district` AS `T2`
+ FROM `{BQ_DATA_PROJECT_ID}.financial.client` AS `T1`
+ INNER JOIN `{BQ_DATA_PROJECT_ID}.financial.district` AS `T2`
  ON `T1`.`district_id` = `T2`.`district_id`
  ORDER BY `T2`.`A11` ASC, `T1`.`birth_date` DESC NULLS LAST
  LIMIT 1
@@ -215,20 +215,20 @@ Example 3 (dividing into two parallel sub-questions)
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.olympics.games
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.olympics.games
 (
  id INT64,
  games_year INT64 OPTIONS(description="description: the year of the game"),
  games_name STRING,
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.olympics.games_city
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.olympics.games_city
 (
  games_id INT64,
  city_id INT64 OPTIONS(description="the id of the city that held the game Maps to city(id)"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.olympics.city
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.olympics.city
 (
  id INT64,
  city_name STRING,
@@ -275,9 +275,9 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 **Final Optimized SQL Query:**
 ```sql
 SELECT COUNT(T3.id)
- FROM {BQ_PROJECT_ID}.olympics.games_city AS T1
- INNER JOIN {BQ_PROJECT_ID}.olympics.city AS T2 ON T1.city_id = T2.id
- INNER JOIN {BQ_PROJECT_ID}.olympics.games AS T3 ON T1.games_id = T3.id
+ FROM `{BQ_DATA_PROJECT_ID}`.olympics.games_city AS T1
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.olympics.city AS T2 ON T1.city_id = T2.id
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.olympics.games AS T3 ON T1.games_id = T3.id
  WHERE T2.city_name = 'London' AND T3.games_year
  BETWEEN 1900 AND 1992
 ```
@@ -287,7 +287,7 @@ Example 4
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.retails.employees (
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.retails.employees (
    employee_id INT64,
    department_id INT64,
    salary INT64,
@@ -327,7 +327,7 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 **Final Optimized SQL Query:**
 ```sql
-SELECT COUNT(*) FROM {BQ_PROJECT_ID}.retails.employees WHERE salary > 100000;
+SELECT COUNT(*) FROM `{BQ_DATA_PROJECT_ID}`.retails.employees WHERE salary > 100000;
 ```
 
 ===========
@@ -335,14 +335,14 @@ Example 6
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.airlines.Airlines
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.airlines.Airlines
 (
  FL_DATE STRING OPTIONS(description="flight date"),
  ORIGIN STRING OPTIONS(description="airport of origin"),
  DEST STRING OPTIONS(description="Destination airport"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.airlines.Airports
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.airlines.Airports
 (
  Code STRING,
  Description STRING,
@@ -385,17 +385,17 @@ flights from refers to ORIGIN; San Diego International airport refers to Descrip
 **Final Optimized SQL Query:**
 ```sql
 SELECT COUNT(FL_DATE)
- FROM {BQ_PROJECT_ID}.airlines.Airlines
+ FROM `{BQ_DATA_PROJECT_ID}`.airlines.Airlines
  WHERE FL_DATE LIKE '2018/8%'
  AND ORIGIN = (
    SELECT DISTINCT T2.ORIGIN
-   FROM {BQ_PROJECT_ID}.airlines.Airports AS T1
-   INNER JOIN {BQ_PROJECT_ID}.airlines.Airlines AS T2 ON T1.Code = T2.ORIGIN
+   FROM `{BQ_DATA_PROJECT_ID}`.airlines.Airports AS T1
+   INNER JOIN `{BQ_DATA_PROJECT_ID}`.airlines.Airlines AS T2 ON T1.Code = T2.ORIGIN
    WHERE T1.Description = 'San Diego, CA: San Diego International' )
  AND DEST = (
    SELECT DISTINCT T4.DEST
-   FROM {BQ_PROJECT_ID}.airlines.Airports AS T3
-   INNER JOIN {BQ_PROJECT_ID}.airlines.Airlines AS T4 ON T3.Code = T4.DEST
+   FROM `{BQ_DATA_PROJECT_ID}`.airlines.Airports AS T3
+   INNER JOIN `{BQ_DATA_PROJECT_ID}`.airlines.Airlines AS T4 ON T3.Code = T4.DEST
    WHERE T3.Description = 'Los Angeles, CA: Los Angeles International' )
 ```
 
@@ -404,20 +404,20 @@ Example 7
 
 **************************
 【Database Info】
-CREATE TABLE {BQ_PROJECT_ID}.food_inspection.businesses
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.food_inspection.businesses
 (
        `business_id` INT64,
        `name` STRING OPTIONS(description="the name of the eatery"),
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.food_inspection.inspections
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.food_inspection.inspections
 (
        `business_id` INT64 OPTIONS(description="the unique id of the business"),
        `score` INT64 OPTIONS(description="description: the inspection score"),
        `date` DATE,
 );
 
-CREATE TABLE {BQ_PROJECT_ID}.food_inspection.violations
+CREATE TABLE `{BQ_DATA_PROJECT_ID}`.food_inspection.violations
 (
        `business_id` INT64,
        `date` DATE,
@@ -468,8 +468,8 @@ SELECT DISTINCT T4.name
  FROM ( SELECT T3.name, T3.years, row_number()
  OVER (PARTITION BY T3.name ORDER BY T3.years)
  AS rowNumber FROM ( SELECT DISTINCT name, FORMAT_DATE('%Y', date)
- AS years FROM {BQ_PROJECT_ID}.food_inspection.inspections AS T1
- INNER JOIN {BQ_PROJECT_ID}.food_inspection.businesses AS T2 ON T1.business_id = T2.business_id
+ AS years FROM `{BQ_DATA_PROJECT_ID}`.food_inspection.inspections AS T1
+ INNER JOIN `{BQ_DATA_PROJECT_ID}`.food_inspection.businesses AS T2 ON T1.business_id = T2.business_id
  WHERE T1.score = 100 ) AS T3 ) AS T4
  GROUP BY T4.name, DATE_SUB(DATE(CONCAT(T4.years, '-01-01')), INTERVAL (T4.rowNumber - 1) YEAR) HAVING COUNT(T4.years) = 4
 ```
@@ -539,19 +539,19 @@ Repeating the question and generating the SQL with Recursive Divide-and-Conquer.
 
 ** Step 4: Construct the Query **
 1. Combining all subtasks, the final query is:
-2. SELECT COUNT(symptom_headache) FROM {BQ_PROJECT_ID}.covid19_symptom_search.symptom_search_sub_region_2_daily GROUP BY FORMAT_DATE('%A', date) ORDER BY COUNT(symptom_headache) DESC LIMIT 1;
+2. SELECT COUNT(symptom_headache) FROM `{BQ_DATA_PROJECT_ID}`.covid19_symptom_search.symptom_search_sub_region_2_daily GROUP BY FORMAT_DATE('%A', date) ORDER BY COUNT(symptom_headache) DESC LIMIT 1;
 
 ** Step 5: Finalize the Query **
 **Final Optimized SQL Query:**
 ```sql
-SELECT 
+SELECT
   FORMAT_DATE('%A', PARSE_DATE('%Y-%m-%d', date)) AS day,
   COUNT(*) AS headache_count
-FROM 
-  {BQ_PROJECT_ID}.covid19_symptom_search.symptom_search_country_daily
-GROUP BY 
+FROM
+  `{BQ_DATA_PROJECT_ID}`.covid19_symptom_search.symptom_search_country_daily
+GROUP BY
   day
-ORDER BY 
+ORDER BY
   headache_count DESC
 LIMIT 1;
 ```
