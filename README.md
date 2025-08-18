@@ -30,21 +30,24 @@ To run the following in cloud shell, click the button below and then follow the 
 
 ### Setup and run agent locally
 
-#### Install poetry
+#### install dependencies with uv
 
-Navigate to the `src/data-science/` directory first and then run `poetry install` to install dependencies for a local virtual environment.
-
-[https://python-poetry.org/docs/#installing-with-the-official-installer](https://python-poetry.org/docs/#installing-with-the-official-installer)  
+Navigate to the `src/data-science/` directory first
 
 ```sh
-# pip install poetry # if using Cloud Shell Editor, uncomment and run this command to install poetry
-cd src/data-science && poetry install
+cd src/data-science
+```
+
+and then run `uv sync` to install dependencies for a local virtual environment
+
+```sh
+uv sync
 ```
 
 Then activate the virual environment
 
 ```sh
-source $(poetry env info --path)/bin/activate
+source .venv/bin/activate
 ```
 
 ### test agent locally
@@ -66,7 +69,7 @@ python3 data_science/utils/reference_guide_RAG.py
 4. Run agent locally via web
 
 ```sh
-poetry run adk web
+uv run adk web
 ```
 
 See [src/data-science/README.md](src/data-science/README.md) for more details.
