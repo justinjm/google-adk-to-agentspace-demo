@@ -4,7 +4,7 @@ Steps to launch the app locally for demoing and sample questions.
 
 ```sh
 # oneliner to resume development or demo
-cd src/data-science && source $(poetry env info --path)/bin/activate && poetry run adk web
+cd src/data-science && source .venv/bin/activate
 ```
 
 ## example chat questions
